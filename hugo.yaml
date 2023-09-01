@@ -16,10 +16,10 @@ minify:
 
 params:
   env: production # to enable google analytics, opengraph, twitter-cards and schema.
-  title: ExampleSite
-  description: "ExampleSite description"
-  keywords: [Blog, Portfolio, PaperMod]
-  author: Me
+  title: jgcarrasco
+  description: "Jorge García-Carrasco or jgcarrasco blog, a blog containing essays about artificial intelligence, neural networks, mechanistic interpretability"
+  keywords: [Blog, jgcarrasco, artificial intelligence]
+  author: ["Jorge García-Carrasco", "Jorge García Carrasco"]
   # author: ["Me", "You"] # multiple authors
   images: ["<link or path of image for opengraph, twitter-cards>"]
   DateFormat: "January 2, 2006"
@@ -59,11 +59,11 @@ params:
   # profile-mode
   profileMode:
     enabled: false # needs to be explicitly set
-    title: ExampleSite
+    title: jgcarrasco
     subtitle: "This is subtitle"
-    imageUrl: "<img location>"
-    imageWidth: 120
-    imageHeight: 120
+    imageUrl: "/avatar.png"
+    imageWidth: 240
+    imageHeight: 240
     imageTitle: my image
     buttons:
       - name: Posts
@@ -73,16 +73,14 @@ params:
 
   # home-info mode
   homeInfoParams:
-    Title: "Hi there \U0001F44B"
-    Content: Welcome to my blog
+    Title: "Jorge García-Carrasco"
+    Content: Welcome, I'm a PhD Student interested on Artificial Intelligence, specially on studying the inner workings of neural networks. I'll post about topics that I'll learn during my PhD, as well as other interests that I have.
 
   socialIcons:
     - name: twitter
-      url: "https://twitter.com/"
-    - name: stackoverflow
-      url: "https://stackoverflow.com"
+      url: "https://twitter.com/jgcarrasco42"
     - name: github
-      url: "https://github.com/"
+      url: "https://github.com/jgcarrasco"
 
   analytics:
     google:
@@ -122,10 +120,7 @@ menu:
       name: tags
       url: /tags/
       weight: 20
-    - identifier: example
-      name: example.org
-      url: https://example.org
-      weight: 30
+
 # Read: https://github.com/adityatelange/hugo-PaperMod/wiki/FAQs#using-hugos-syntax-highlighter-chroma
 pygmentsUseClasses: true
 markup:

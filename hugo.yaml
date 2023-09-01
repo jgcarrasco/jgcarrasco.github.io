@@ -1,7 +1,7 @@
 baseURL: "https://jgcarrasco.github.io/"
 title: ExampleSite
 paginate: 5
-theme: PaperMod
+theme: papermod
 
 enableRobotsTXT: true
 buildDrafts: false

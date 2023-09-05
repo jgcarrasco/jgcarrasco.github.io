@@ -2,6 +2,7 @@
 title = 'Publications'
 draft = false
 ShowReadingTime = false
+ShowWordCount = false
 +++
 
 García-Ponsoda, S., **García-Carrasco, J.**, Teruel, M. A., Maté, A., & Trujillo, J. (2023). Feature engineering of EEG applied to mental disorders: a systematic mapping study. *Applied Intelligence*, 1-41.

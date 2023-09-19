@@ -16,9 +16,9 @@ minify:
 
 params:
   env: production # to enable google analytics, opengraph, twitter-cards and schema.
-  title: jgcarrasco
-  description: "Jorge García-Carrasco or jgcarrasco blog, a blog containing essays about artificial intelligence, neural networks, mechanistic interpretability"
-  keywords: [Blog, jgcarrasco, artificial intelligence]
+  title: jgcarrasco | Jorge García-Carrasco
+  description: "I'm a PhD Student working on Artificial Intelligence, specifically on analyzing the inner workings of neural networks.  I will mostly post about my research notes."
+  keywords: [blog, jgcarrasco, artificial intelligence, jorge garcia carrasco, neural networks, interpretability, deep learning]
   author: Jorge García-Carrasco
   # author: ["Me", "You"] # multiple authors
   images: ☀️

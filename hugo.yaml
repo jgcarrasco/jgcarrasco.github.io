@@ -1,5 +1,5 @@
 baseURL: "https://jgcarrasco.github.io/"
-title: jgcarrasco
+title: jgcarrasco | Jorge García Carrasco
 paginate: 5
 theme: papermod
 
@@ -16,7 +16,7 @@ minify:
 
 params:
   env: production # to enable google analytics, opengraph, twitter-cards and schema.
-  title: jgcarrasco | Jorge García-Carrasco
+  title: jgcarrasco | Jorge García Carrasco
   description: "I'm a PhD Student working on Artificial Intelligence, specifically on analyzing the inner workings of neural networks.  I will mostly post about my research notes."
   keywords: [blog, jgcarrasco, artificial intelligence, jorge garcia carrasco, neural networks, interpretability, deep learning]
   author: Jorge García-Carrasco
@@ -59,7 +59,7 @@ params:
   # profile-mode
   profileMode:
     enabled: false # needs to be explicitly set
-    title: jgcarrasco
+    title: jgcarrasco | Jorge García Carrasco
     subtitle: "This is subtitle"
     imageUrl: "/avatar.png"
     imageWidth: 240
@@ -73,7 +73,7 @@ params:
 
   # home-info mode
   homeInfoParams:
-    Title: "Jorge García-Carrasco"
+    Title: "Jorge García Carrasco"
     Content: Welcome, I'm a PhD Student interested on Artificial Intelligence, specially on studying the inner workings of neural networks. I'll post about topics that I'll learn during my PhD, as well as other interests that I have.
 
   socialIcons:
@@ -81,6 +81,10 @@ params:
       url: "https://twitter.com/jgcarrasco42"
     - name: github
       url: "https://github.com/jgcarrasco"
+    - name: linkedin
+      url: "https://www.linkedin.com/in/jgcarrasco/"
+    - name: scholar
+      url: "https://scholar.google.com/citations?user=48GgM40AAAAJ&hl=en"
 
   analytics:
     google:

@@ -17,23 +17,23 @@
     --green:     #859900;
     --theme: var(--base3);
     --entry: var(--base2);
-    --primary: var(--yellow);
-    --secondary: var(--base01);
-    --tertiary: var(--yellow);
+    --primary: var(--base01);
+    --secondary: var(--yellow);
+    --tertiary: var(--base00);
     --content: var(--base01);
-    --hljs-bg: var(--base02);
-    --code-bg: var(--base2);
-    --border: var(--base03);
+    --hljs-bg: var(--base03);
+    --code-bg: var(--base3);
+    --border: var(--base3);
 }
 
 .dark {
     --theme: var(--base03);
     --entry: var(--base02);
-    --primary: var(--yellow);
-    --secondary: var(--base1);
-    --tertiary: var(--yellow);
+    --primary: var(--base1);
+    --secondary: var(--yellow);
+    --tertiary: var(--base0);
     --content: var(--base1);
     --hljs-bg: var(--base02);
-    --code-bg: var(--base02);
-    --border: var(--base3);
+    --code-bg: var(--base03);
+    --border: var(--base03);
 }

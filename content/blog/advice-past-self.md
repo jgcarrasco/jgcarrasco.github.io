@@ -3,6 +3,7 @@ title = "Advice to my past self getting into Deep Learning"
 date = 2023-09-03T15:21:01+02:00
 showtoc = true
 draft = false
+tags = ["advice", "learning"]
 +++
 
 I remember, back in 2018 while I was a Physics undergrad, to stumble upon Generative Adversarial Networks (GAN) and become amazed by the results that could be obtained. Since that moment, I became really interested on knowing more about neural networks and how do they work. In fact, it ended up becoming my main interest and started pursuing a PhD in this field, instead of quantum computing or theoretical physics, which were my other big interests. Maybe it was the combination of problem-solving, maths and coding that caught my attention, or the sheer amount and variety of exciting papers that were published month by month. Either way, I found myself stepping into the shores of Machine Learning, and finally getting into deep waters once that I finished my degree and had a little more time.

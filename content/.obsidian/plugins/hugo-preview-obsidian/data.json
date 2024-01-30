@@ -1,0 +1,5 @@
+{
+  "hugoCommandPath": "cd .. & hugo",
+  "port": "1313",
+  "command": ""
+}

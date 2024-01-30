@@ -15,9 +15,9 @@ We live in the era of information. We have millions of videos, movies or series 
 
 Don't get me wrong, I think that these can be amazing tools; I myself discovered a lot of interesting papers and blog posts that made a significant impact in my career through Twitter, as well as lots of interesting things through YouTube. The point that I'm trying to make here is that **getting distracted in the current world is extremely easy**. 
 
-However, if you want to learn about any topic, you'll need to keep a **deep focus**, and these distractions are super likely to get in your way. Because of this, my first advice is that **you should cultivate a habit of deep working**. What do I mean by this? **Deep work is a state where we are completely focused on a single task, with no distractions**: for me, this means not checking emails in between, no music... just working on the single task that you have proposed.
+However, if you want to learn about any topic, you'll need to keep a **deep focus**, and these distractions are super likely to get in your way. Because of this, my first advice is that **you should cultivate a habit of deep working**. What do I mean by this? **Deep work is a state where we are completely focused on a single task, with no distractions**: for me, this means not checking emails in between, not checking your phone... just working on the single task that you have proposed.
 
-The ability to maintain deep focus can be trained: the more you try, the longer you will be able to keep focus. Therefore, I recommend that you choose a task that you want to do, and then start doing it with no distractions until you can't keep focus. Then, rest by taking a walk, laying on the couch... something that doesn't distract you that much, and then keep going. You'll see that your capacity will increase. As a reference, studies show that humans can keep deep focus at full capacity up to 4 daily hours on total, so don't blame yourself if you can't have laser focus during 12 hours, it's completely normal! 
+The ability to maintain deep focus can be trained: the more you try, the longer you will be able to keep focus. Therefore, I recommend that you choose a task that you want to do, and then start doing it with no distractions until you can't keep focus. Then, rest by taking a walk, laying on the couch... or something that doesn't distract you that much, and then keep going. You'll see that your capacity will increase. Just as a reference, studies show that humans can keep deep focus at full capacity up to 4 daily hours on total, so don't blame yourself if you can't have laser focus during 12 hours, it's completely normal! 
 
 Anyway, this looks like obvious advice, but it's often completely overlooked despite being extremely important. You'll notice that by specifying clear tasks and commiting to fully focus on them, one at a time with no distractions, **will get you further in a shorter time**.
 
@@ -64,7 +64,11 @@ Now it comes the most exciting part, which is to choose your own way! Once that 
 1. **Read and implement papers:** to be able to understand and implement papers is exciting, as well as being a required ability if you want to get into research. I recommend you to start by reading/implementing easier papers, such as [Image-to-Image Translation with Conditional Adversarial Nets
 ](https://phillipi.github.io/pix2pix/). You can also look at [already implemented papers](https://nn.labml.ai/) and choose one that excites you the most. 
 
-2. **Join a Kaggle Competition:** Kaggle Competitions makes you work on a real-world problem, so it's the perfect oportunity to put all your skills to test. Moreover, you can meet people with the same interests than you, and you could even earn some cash if you win! 
+2. **Build your own projects:** Once that you have a solid grasp of the fundamentals, I think that the best and most
+   rewarding way of learning is to build your own projects. In this way, you will learn things on-the-fly as needed
+   while testing your skills to create something, which is essentially what we are aiming for.
+
+3. **Join a Kaggle Competition:** Kaggle Competitions makes you work on a real-world problem, so it's the perfect oportunity to put all your skills to test. Moreover, you can meet people with the same interests than you, and you could even earn some cash if you win! 
 
 
 

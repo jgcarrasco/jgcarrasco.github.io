@@ -1,7 +1,6 @@
 +++
 title = "Predicting digits with a neural network in C"
 date = "2024-01-30T11:35:52+01:00"
-katex = true
 +++
 
 **Note:** Here I will write down my notes related to my [baccpropagation project](https://github.com/jgcarrasco/baccpropagation), specifically related to building a simple 1-layer NN to predict digits from the [MNIST dataset](http://yann.lecun.com/exdb/mnist/) in C language. I will keep adding notes as I advance through the project, so expect it to be a little bit messy at first!
@@ -11,7 +10,7 @@ katex = true
 - [ ] Write the theory behind backprop with a 1L NN.
 ## Input Data
 
-The MNIST dataset contains handwritten digits and has a training set of 60000 examples, and a test set of 10000 examples. The images are 28x28 pixels. I'm going to try implementing the code to load the data directly from the binary format provided. As an example, it can be seen at the end of the MNIST webpage what the format of the training set is as follows:
+The MNIST dataset contains handwritten digits and has a training set of 60000 examples, and a test set of 10000 examples. The images are 28x28 pixels. I'm going to try implementing the code to load the data directly from the binary format provided. As an example, it can be seen at the end of the MNIST webpage that the format of the training set is as follows:
 
 ```
 [offset] [type]          [value]          [description]  
@@ -40,4 +39,10 @@ After a little bit of work, I managed to print the digits on the command line:
 
 ![](/images/Pasted%20image%2020240131102320.png)
 
-Now, I just have to implement the functionality to store the information on a dataset.
+Yes, that is a five. Now, I just have to implement the functionality to store the information on a dataset.
+
+## 1-Layer NN
+
+Okay, now let's work through the maths behind a 1-Layer NN. The input data $\mathbf{x}$ will be a real-valued vector of $28*28 = 784$ pixels (i.e. a flattened image). We will normalize from $[0, 256]$ to the $[0,1]$ range. As the NN has just one layer, it will have one neuron for every possible class. In this case, we have $10$ classes/neurons (one for every digit, from zero to nine).   
+
+$$f(\mathbf{x}) = ,\quad \mathbf{x}\in\mathbb{R}^{784}$$

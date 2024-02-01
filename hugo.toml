@@ -50,3 +50,14 @@ ignoreErrors = ["error-disable-taxonomy"]
   # for details. An example TOML config that uses [ISO
   # 8601](https://en.wikipedia.org/wiki/ISO_8601) format:
   # dateFormat = "2006-01-02"
+  math=true
+
+[markup]
+  [markup.goldmark]
+     [markup.goldmark.extensions]
+       [markup.goldmark.extensions.passthrough]
+         enable = true
+         [markup.goldmark.extensions.passthrough.delimiters]
+            block = [['\[', '\]'], ['$$', '$$']]
+            inline = [['\(', '\)'], ['$', '$']]
+

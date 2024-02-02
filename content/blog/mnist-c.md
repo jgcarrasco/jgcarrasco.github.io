@@ -56,20 +56,21 @@ where $p_j$ is the probability of predicting the $j$th digit. Performing some ba
 
 $$p_j = \frac{e^{y_j}}{1 + e^{y_j}} = \sigma(y_j)$$
 where $\sigma$ is the [sigmoid function](https://en.wikipedia.org/wiki/Sigmoid_function). There is just one more step that we need to take: as the logits were unnormalized, we just have to normalize $p_j$ so that the probabilities sum to one (i.e. $\sum_j^{10} p_j = 1$), which is simply:
-$$p_j = \frac{e^{y_j}}{\sum_i^{10} \left( 1 + e^{y_j} \right)}$$
+$$p_j = \frac{e^{y_j}}{\sum_i^{10} e^{y_j} }$$
 That's it! Just so you know, the function that passes from unnormalized logits to probabilities in a multiclass problem is called the [softmax function](https://en.wikipedia.org/wiki/Softmax_function). 
 
 **Loss:** Now, we need a way to quantify the difference between the prediction and the real result. This is defined by a function of the output of the NN and the ground truth termed the **loss function**: the lower its value, the closer the predictions will be to the ground truth. We will use the [cross-entropy loss](https://en.wikipedia.org/wiki/Cross-entropy), which in our case is just:
 
 $$\mathcal{L}(\mathbf{y}^{gt}, \mathbf{p}) = -\sum_i^{10}y^{gt}_i\log p_i$$
 where $\mathbf{y}^{gt}$ is the ground truth vector, which is simply a one-hot vector representing the correct digit. For example, if the input is the number one, then $\mathbf{y}^{gt}=(0,1,0,0,0,0,0,0,0,0,0)$. Therefore, if the correct digit is the $j$th one, we can write the loss term as:
-$$\mathcal{L}(\mathbf{y}^{gt}, \mathbf{p}) = -y_j + \sum_i^{10}\log (1 + e^{y_i})$$
-To get an intuition of which values does $\mathcal{L}$ takes, we can compute the following limits:
+$$\mathcal{L}(\mathbf{y}^{gt}, \mathbf{p}) = -y_j + \log\sum_i^{10}e^{y_i}$$
+As a sanity check, it is a good idea to compare the average loss that you get across the test set vs. the cross-entropy loss obtained with a uniform probability across the possible classes. In short, on must check that the average loss is roughly $-\log (1/10) \approx 2.3026$.
 
-- For $y_j \to \infty, y_i \to -\infty \quad \forall i \in [0,10]\setminus \{j\}$  (i.e. perfect classification) we get that $\mathcal{L} = 0$.
-- For $y_j \to -\infty, y_i \to \infty \quad \forall i \in [0,10]\setminus \{j\}$ (i.e. infinitely bad classification) we get $\mathcal{L} \to \infty$. 
-
-**Backprop:** Okay, we have defined a 1-Layer NN, that will output the logit values associated to the possible predicted digits, and defined a loss value that tells us how well is our model doing. The problem now is that if we randomly initialize the weights of our network, the predictions will be extremely bad! How can we tweak the values of the weights so that we progressively improve the predictions? That's where the [backpropagation algorithm](https://en.wikipedia.org/wiki/Backpropagation) comes into action. The idea behind backprop is really simple: intuitively, the **gradient** of the loss with respect to a weight gives us the "direction" in which tweaking the weight causes an increase in the loss value. Therefore, if we substract this gradient to our weight **we will be tweaking the weight so that the loss is reduced**. This is expressed as:
+**Backprop:** Okay, we have defined a 1-Layer NN, that will output the logit values associated to the possible predicted digits, and defined a loss value that tells us how well is our model doing. The problem now is that if we randomly initialize the weights of our network, the predictions will be extremely bad! How can we tweak the values of the weights so that we progressively improve the predictions? That's where the backpropagation algorithm comes into action. The idea behind backprop is really simple: intuitively, the gradient of the loss with respect to a weight gives us the "direction" in which tweaking the weight causes an increase in the loss value. Therefore, if we substract this gradient to our weight we will be tweaking the weight so that the loss is reduced. This is expressed as:
 
 $$w_{ij} \leftarrow w_{ij} - \alpha\frac{\partial\mathcal{L}}{\partial w_{ij}}$$
-where $\frac{\partial\mathcal{L}}{\partial w_{ij}}$ is the partial derivative of $\mathcal{L}$ with respect to the weight $w_{ij}$. 
+where $\frac{\partial\mathcal{L}}{\partial w_{ij}}$ is the partial derivative of $\mathcal{L}$ with respect to the weight $w_{ij}$. Now, by using the chain rule:
+
+$$\frac{\partial\mathcal{L}}{\partial \mathcal{w_{ij}}} = \frac{\partial\mathcal{L}}{\partial y_j}\frac{\partial y_j}{\partial \mathcal{w_{ij}}} = \left( \frac{e^{y_j}}{\sum_i^{10}e^{y_i}} - \delta_{kj} \right)x_i$$
+$$\frac{\partial\mathcal{L}}{\partial \mathcal{w_{ij}}} = \frac{\partial\mathcal{L}}{\partial y_j}\frac{\partial y_j}{\partial \mathcal{b_{j}}} = \frac{e^{y_j}}{\sum_i^{10}e^{y_i}} - \delta_{kj}$$
+where $k$ is the index of the correct label and $\delta_{kj}$ is the [Kronecker delta](https://en.wikipedia.org/wiki/Kronecker_delta).

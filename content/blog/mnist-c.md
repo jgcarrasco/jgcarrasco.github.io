@@ -5,9 +5,6 @@ date = "2024-01-30T11:35:52+01:00"
 
 **Note:** Here I will write down my notes related to my [baccpropagation project](https://github.com/jgcarrasco/baccpropagation), specifically related to building a simple 1-layer NN to predict digits from the [MNIST dataset](http://yann.lecun.com/exdb/mnist/) in C language. I will keep adding notes as I advance through the project, so expect it to be a little bit messy at first! Also, don't expect this to be a comprehensive tutorial or something like that, my idea is to write down the process of advancing through the project, complementing the code in the repository.
 
-## TODO
-- [x] Implement code to read the dataset and images, maybe print them in terminal.
-- [ ] Write the theory behind backprop with a 1L NN.
 ## Input Data
 
 The MNIST dataset contains handwritten digits and has a training set of 60000 examples, and a test set of 10000 examples. The images are 28x28 pixels. I'm going to try implementing the code to load the data directly from the binary format provided. As an example, it can be seen at the end of the MNIST webpage that the format of the training set is as follows:
@@ -72,5 +69,14 @@ $$w_{ij} \leftarrow w_{ij} - \alpha\frac{\partial\mathcal{L}}{\partial w_{ij}}$$
 where $\frac{\partial\mathcal{L}}{\partial w_{ij}}$ is the partial derivative of $\mathcal{L}$ with respect to the weight $w_{ij}$. Now, by using the chain rule:
 
 $$\frac{\partial\mathcal{L}}{\partial \mathcal{w_{ij}}} = \frac{\partial\mathcal{L}}{\partial y_j}\frac{\partial y_j}{\partial \mathcal{w_{ij}}} = \left( \frac{e^{y_j}}{\sum_i^{10}e^{y_i}} - \delta_{kj} \right)x_i$$
-$$\frac{\partial\mathcal{L}}{\partial \mathcal{w_{ij}}} = \frac{\partial\mathcal{L}}{\partial y_j}\frac{\partial y_j}{\partial \mathcal{b_{j}}} = \frac{e^{y_j}}{\sum_i^{10}e^{y_i}} - \delta_{kj}$$
+$$\frac{\partial\mathcal{L}}{\partial \mathcal{b_{j}}} = \frac{\partial\mathcal{L}}{\partial y_j}\frac{\partial y_j}{\partial \mathcal{b_{j}}} = \frac{e^{y_j}}{\sum_i^{10}e^{y_i}} - \delta_{kj}$$
 where $k$ is the index of the correct label and $\delta_{kj}$ is the [Kronecker delta](https://en.wikipedia.org/wiki/Kronecker_delta).
+
+So, putting it all together, I trained the network with this ultra-simple training procedure:
+1. Sample an image from the training set.
+2. Pass it through the network and obtain the logits (forward pass)
+3. Compute the gradient of the loss w.r.t each weight of the network (backward pass)
+4. Using the previously-computed gradients, update the weights so that the loss is minimized.
+
+Surprisingly... it works! The figure below shows that we obtain an accuracy of $\sim86\%$ after training with just $10000$ images from the training set. As a reference/sanity check,  [they obtain an accuracy of 88% in the original paper, with essentially the same network](http://yann.lecun.com/exdb/mnist/).
+![](/images/Pasted%20image%2020240206164349.png)

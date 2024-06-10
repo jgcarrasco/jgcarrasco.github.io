@@ -1,0 +1,26 @@
+body {
+
+    margin: 50px auto;
+    max-width: 650px;
+    font-family: "Open Sans", sans-serif;
+
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    height: 75px;
+    padding:0px 18px;
+    background-color: rgb(255, 245, 242);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    color: black;
+    text-decoration: none;
+    font-size: 32px;
+    font-weight: bold;
+}

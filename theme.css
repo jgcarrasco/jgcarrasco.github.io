@@ -3,28 +3,31 @@
 	--nc-font-mono: Consolas, monaco, 'Ubuntu Mono', 'Liberation Mono', 'Courier New', Courier, monospace;
 
     /* Light theme */
-    --nc-tx-1: #000000;
-    --nc-tx-2: #1A1A1A;
-    --nc-bg-1: #FFFFFF;
-    --nc-bg-2: #F6F8FA;
-    --nc-bg-3: #FFF8E1; /* Changed from #E5E7EB to a light gold */
-    --nc-lk-1: #FFA500;  /* Changed to a bright orange */
-    --nc-lk-2: #FF8C00;  /* Changed to a darker orange */
-    --nc-lk-tx: #FFFFFF;
-    --nc-ac-1: #FFD700;  /* Changed to a gold */
-    --nc-ac-tx: #8B4513; /* Changed to a complementary dark brown */
+    --nc-tx-1: #2C2C2C; /* Darker gray for primary text */
+    --nc-tx-2: #555555; /* Slightly darker medium gray for secondary text */
+    --nc-bg-1: #FFFFFF; /* Pure white for primary background */
+    --nc-bg-2: #F0F0F0; /* Very light gray for header background */
+    --nc-bg-3: #E0E0E0; /* Light gray for borders */
+    --nc-lk-1: #FF9800; /* Slightly softer orange for links */
+    --nc-lk-2: #E67E00; /* Darker golden orange for visited or active links */
+    --nc-lk-tx: #FFFFFF; /* White for link text */
+    --nc-ac-1: #FFC107; /* Bright gold for accents */
+    --nc-ac-tx: #2C2C2C; /* Darker gray for accent text */
 
     /* Dark theme */
-    --nc-d-tx-1: #ffffff;
-    --nc-d-tx-2: #eeeeee;
-    --nc-d-bg-1: #000000;
-    --nc-d-bg-2: #111111;
-    --nc-d-bg-3: #332B00; /* Changed from #222222 to a dark gold/brown */
-    --nc-d-lk-1: #FFA500; /* Changed to a bright orange */
-    --nc-d-lk-2: #FF8C00; /* Changed to a darker orange */
-    --nc-d-lk-tx: #FFFFFF;
-    --nc-d-ac-1: #FFD700; /* Changed to a gold */
-    --nc-d-ac-tx: #FFFFFF;
-
-
+    --nc-d-tx-1: #E0E0E0; /* Slightly lighter gray for primary text */
+    --nc-d-tx-2: #B0B0B0; /* Medium-light gray for secondary text */
+    --nc-d-bg-1: #121212; /* Darker gray for primary background */
+    --nc-d-bg-2: #1F1F1F; /* Dark gray for secondary background */
+    --nc-d-bg-3: #2B2B2B; /* Medium-dark gray for subtle highlights */
+    --nc-d-lk-1: #FF9800; /* Slightly softer orange for links */
+    --nc-d-lk-2: #E67E00; /* Darker golden orange for visited or active links */
+    --nc-d-lk-tx: #FFFFFF; /* White for link text */
+    --nc-d-ac-1: #FFC107; /* Bright gold for accents */
+    --nc-d-ac-tx: #E0E0E0; /* Slightly lighter gray for accent text */
 }
+
+
+
+
+

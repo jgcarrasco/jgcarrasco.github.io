@@ -3,31 +3,26 @@
 	--nc-font-mono: Consolas, monaco, 'Ubuntu Mono', 'Liberation Mono', 'Courier New', Courier, monospace;
 
     /* Light theme */
-    --nc-tx-1: #2C2C2C; /* Darker gray for primary text */
-    --nc-tx-2: #555555; /* Slightly darker medium gray for secondary text */
-    --nc-bg-1: #FFFFFF; /* Pure white for primary background */
-    --nc-bg-2: #F0F0F0; /* Very light gray for header background */
-    --nc-bg-3: #E0E0E0; /* Light gray for borders */
-    --nc-lk-1: #FF9800; /* Slightly softer orange for links */
-    --nc-lk-2: #E67E00; /* Darker golden orange for visited or active links */
+    --nc-tx-1: #4A3C00; /* Darker brownish orange for primary text */
+    --nc-tx-2: #6E5A00; /* Slightly darker golden brown for secondary text */
+    --nc-bg-1: #FFEFD5; /* Peach puff for primary background */
+    --nc-bg-2: #FFCC99; /* Darker peachy-orange for header background */
+    --nc-bg-3: #FFDAB9; /* Peach color for borders */
+    --nc-lk-1: #FFA500; /* Bright orange for links */
+    --nc-lk-2: #FF8C00; /* Darker orange for visited or active links */
     --nc-lk-tx: #FFFFFF; /* White for link text */
-    --nc-ac-1: #FFC107; /* Bright gold for accents */
-    --nc-ac-tx: #2C2C2C; /* Darker gray for accent text */
+    --nc-ac-1: #FFB347; /* Lighter orange for accents */
+    --nc-ac-tx: #4A3C00; /* Darker brownish orange for accent text */
 
     /* Dark theme */
-    --nc-d-tx-1: #E0E0E0; /* Slightly lighter gray for primary text */
-    --nc-d-tx-2: #B0B0B0; /* Medium-light gray for secondary text */
-    --nc-d-bg-1: #121212; /* Darker gray for primary background */
-    --nc-d-bg-2: #1F1F1F; /* Dark gray for secondary background */
-    --nc-d-bg-3: #2B2B2B; /* Medium-dark gray for subtle highlights */
-    --nc-d-lk-1: #FF9800; /* Slightly softer orange for links */
-    --nc-d-lk-2: #E67E00; /* Darker golden orange for visited or active links */
+    --nc-d-tx-1: #FFDAB9; /* Light peach for primary text */
+    --nc-d-tx-2: #FFB347; /* Lighter orange for secondary text */
+    --nc-d-bg-1: #4A3C00; /* Darker brownish orange for primary background */
+    --nc-d-bg-2: #3B2D00; /* Darker, deeper brownish-orange for header background */
+    --nc-d-bg-3: #8B5A00; /* Medium dark orange for subtle highlights */
+    --nc-d-lk-1: #FFA500; /* Bright orange for links */
+    --nc-d-lk-2: #FF8C00; /* Darker orange for visited or active links */
     --nc-d-lk-tx: #FFFFFF; /* White for link text */
-    --nc-d-ac-1: #FFC107; /* Bright gold for accents */
-    --nc-d-ac-tx: #E0E0E0; /* Slightly lighter gray for accent text */
+    --nc-d-ac-1: #FFB347; /* Lighter orange for accents */
+    --nc-d-ac-tx: #FFDAB9; /* Light peach for accent text */
 }
-
-
-
-
-

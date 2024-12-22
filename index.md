@@ -1,6 +1,6 @@
 ---
 title: jgcarrasco
-subtitle: 
+subtitle: Jorge García Carrasco | Software Developer | PhD Student 
 author: Jorge García Carrasco 
 author-url: "https://jgcarrasco.github.io"
 date: 12-20-2024
@@ -8,11 +8,14 @@ lang: en
 version: v0.1.1
 ---
 
+
 Welcome to my homepage!
 
 ## About me
 
 I'm currently finishing my PhD studies at the University of Alicante. My research is mostly focused on trying to understand the inner workings of neural networks, mechanistic interpretability and its applications. Before getting into deep dearning/ML I got a physics degree. During that time I discovered ML and loved the combination of programming/math/problem solving abilities.
+
+You can also find me at [GitHub](https://github.com/jgcarrasco), [X](https://x.com/jgcarrasco42), [LinkedIn](https://www.linkedin.com/in/jgcarrasco/), [Google Scholar](https://scholar.google.com/citations?user=48GgM40AAAAJ&amp;hl=en).
 
 ## Projects
 

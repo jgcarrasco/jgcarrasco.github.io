@@ -1,11 +1,5 @@
 ---
-title: jgcarrasco
-subtitle: Jorge García Carrasco | Software Developer | PhD Student 
-author: Jorge García Carrasco 
-author-url: "https://jgcarrasco.github.io"
-date: 12-20-2024
-lang: en
-version: v0.1.1
+title: Home
 ---
 
 

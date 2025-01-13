@@ -3,7 +3,7 @@ layout: post
 title: Simulating games with neural networks
 date: 2025-01-10
 description: Replacing game logic by a neural network
-categories: building
+categories: building log
 thumbnail: assets/img/IRIS_diagram.png
 ---
 
@@ -42,23 +42,77 @@ Once that world model is trained, we will feed the initial frame to the encoder 
 That's cool but, how do we actually train?. Essentially, each training step consists of three different processes:
 
 1. **Collect experience:** Use the current policy to play the actual game and gather experience.
-2. **Update the world model:** Use the previous experience to train E, D and G to properly predict the next observation, as well as the rewards and episode end.
+2. **Update the world model:** Use the previous experience to train $$E$$, $$D$$ and $$G$$ to properly predict the next observation, as well as the rewards and episode end.
 3. **Update the behavior:** Improve the policy and value functions in the world model.
 
 {% include figure.liquid loading="eager" path="assets/img/IRIS_algorithm.png" class="img-fluid rounded z-depth-1" %} IRIS algorithm. Source: [3]
 
 ## Getting our hands dirty: AI-Generated Pong
 
-Instead of having to figure out everything before coding, let's get our hands dirty by trying to get a minimal working implementation. My idea is to first take a simple game (such as Pong) and try training a world model with just a random policy. In other words, this means gathering data from games where the policy is just "move up/down/do nothing with 33% probability" and train the world model with that data. Then, we can think about actually including RL.   
+Instead of having to figure out everything before coding, let's get our hands dirty by trying to get a minimal working implementation. My idea is to first take a simple game (such as Pong) and try training a world model with just a random policy. In other words, this means gathering data from games where the policy is just "move up/down/do nothing with 33% probability" and train the world model with that data. Then, we can think about actually including RL. 
 
-0. Train a simple RL agent to collect experience in step 4. (Note that the aim of the paper is to train the agent in the imagination. But we are interested in collecting decent data. A random policy might not work because it will be very hard to return the ball, therefore the will not be able to feed data from a lot of situations to the world model.)
 1. Setup Pong
 2. Implement VQ-VAE
 3. Implement GPT
-4. Gather random experience and train it
+4. Gather random experience and train the world model
 5. Visualize world model
 6. Interact with world model
 
+#### 1. Setting up Pong
+
+We are going to use [Gymnasium](https://gymnasium.farama.org/index.html), a maintained fork of OpenAI's Gym RL library. This library is really convenient as it already has implemented all the common RL environments, including Pong and other Atari games. Setting up Pong is really easy:
+
+```python
+import gymnasium as gym
+import ale_py
+
+gym.register_envs(ale_py)  # optional, helpful for IDEs or pre-commit
+
+env = gym.make("ALE/Pong-v5", render_mode="rgb_array")
+
+# Reset the environment to start
+observation, info = env.reset()
+
+frames = [observation]
+# Run a random action loop
+for _ in range(1000):
+    action = env.action_space.sample()  # Choose a random action
+    observation, reward, done, truncated, info = env.step(action)  # Take a step
+    frames.append(observation)
+    if done or truncated:
+        observation, info = env.reset()  # Reset the environment if done or truncated
+env.close()  # Close the environment
+
+import cv2
+out = cv2.VideoWriter('pong.mp4', cv2.VideoWriter_fourcc(*'H264'), 30, (frames[0].shape[1], frames[0].shape[0]))
+for frame in frames:
+    out.write(cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
+out.release()
+```
+
+The snippet above creates a Pong environment with `gym.make` and starts it with `env.reset()`. This function returns `observation`, which is a `(210x160, 3)` RGB array of the screen, and `info` about the environment. Then, for 1000 steps, it randomly selects an action and executes it inside of the game, obtaining the next `observation` of the environment, as well as the `reward` for taking the action, whether the agent reaches terminal state (`done`), and whether the execution has reached its limit (`truncated`).
+
+The last part of the snippet is just used to save a video of the simulation:
+
+{% include video.liquid path="assets/video/pong.mp4" class="img-fluid rounded z-depth-1" controls=false autoplay=true loop=true %} 
+
+As you can see, our random strategy leaves a lot to be desired: it only returns the ball twice in 1000 steps, and ends up with a score of zero! This implies that the data collected from this random agent will leave out a lot of the game logic (e.g. the dynamics of the ball, the green score counter) that the world model will not be able to, well, model. 
+
+In other words, we should expect that a world model trained from the random agent experience will properly model the movement of our player, and maybe the first collision of the ball, but the other mechanics will be undefined as it hasn't seen any data about them. 
+
+For now, we are going to implement the actual world model, train it with the experience of the random agent, and test whether this is true or not. Then, we will actually implement a proper RL agent.
+
+### === UNDER CONSTRUCTION ===
+
+#### 2. Implement VQ-VAE
+
+For the implementation, I think that I am going to use the one from [commaVQ](https://github.com/commaai/commavq/tree/master).
+
+How does it work?
+
+Hyperparameters from IRIS paper
+
+Brief snippet about dimensions
 
 ### References
 
@@ -68,4 +122,3 @@ Instead of having to figure out everything before coding, let's get our hands di
 
 [3] <https://arxiv.org/pdf/2209.00588/>
 
-### === UNDER CONSTRUCTION ===

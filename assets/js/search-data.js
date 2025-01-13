@@ -23,15 +23,15 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/publications/";
           },
-        },{id: "post-a-post-with-image-galleries",
+        },{id: "post-simulating-games-with-neural-networks",
       
-        title: "a post with image galleries",
+        title: "Simulating games with neural networks",
       
-      description: "this is what included image galleries could look like",
+      description: "Replacing game logic by a neural network",
       section: "Posts",
       handler: () => {
         
-          window.location.href = "/blog/2024/photo-gallery/";
+          window.location.href = "/blog/2025/neural-physics-engine/";
         
       },
     },{id: "news-a-simple-inline-announcement",

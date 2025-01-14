@@ -1,8 +1,8 @@
 ---
 layout: post
-title: Simulating games with neural networks
+title: Building an AI-generated Pong
 date: 2025-01-10
-description: Replacing game logic by a neural network
+description: Building an extremely slow and inefficient Pong with neural networks. What could go wrong?
 categories: building log
 thumbnail: assets/img/IRIS_diagram.png
 ---
@@ -84,7 +84,7 @@ for _ in range(1000):
 env.close()  # Close the environment
 
 import cv2
-out = cv2.VideoWriter('pong.mp4', cv2.VideoWriter_fourcc(*'H264'), 30, (frames[0].shape[1], frames[0].shape[0]))
+out = cv2.VideoWriter('pong.avi', cv2.VideoWriter_fourcc(*'XVID'), 30, (frames[0].shape[1], frames[0].shape[0]))
 for frame in frames:
     out.write(cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
 out.release()
@@ -102,17 +102,75 @@ In other words, we should expect that a world model trained from the random agen
 
 For now, we are going to implement the actual world model, train it with the experience of the random agent, and test whether this is true or not. Then, we will actually implement a proper RL agent.
 
-### === UNDER CONSTRUCTION ===
 
 #### 2. Implement VQ-VAE
 
-For the implementation, I think that I am going to use the one from [commaVQ](https://github.com/commaai/commavq/tree/master).
+Before explaining the VQ-VAE, it is a good idea to think about where it comes from. The VQ-VAE is basically a version of the good old **autoencoder**. 
 
-How does it work?
+{% include figure.liquid loading="eager" path="assets/img/autoencoder.png" class="img-fluid rounded z-depth-1" %}
 
-Hyperparameters from IRIS paper
+The autoencoder is composed by two components:
 
-Brief snippet about dimensions
+- An **encoder**, which maps the input (in our case, a frame image) into a **latent space** vector $$z$$.
+- A **decoder**, which takes the latent vector $$z$$ and tries to **reconstruct** the input from it.
+
+The main idea here is that by training an autoencoder to reconstruct the input images, it will also learn good representations in the latent space. Then, these representations can be really useful for several applications such as compression, image generation or anomaly detection. 
+
+In our specific case, **why do we want to use autoencoders**? We want to build a world model that, given the current frame and action, generates the next frame. More specific, the backbone of the world model is going to be a transformer that takes **all** the previous frames and actions and generates the next frame. The thing is that directly feeding images to the transformer is going to be unfeasible as the computational cost of the transformer grows quadratically with the number of frames. Therefore, the idea is to **compress the frames into a smaller latent representation via an autoencoder**.  
+
+We are going to use a variation called  **Vector Quantised-Variational AutoEncoder (VQ-VAE)**. Don't worry about the name, this is simply an autoencoder. The main difference is that the latent space is discrete instead of continuous. In specific, we will have a dictionary of possible latent vectors $$D = {e_1, e_2, ..., e_N}$$ and the output of the encoder will be encoded into the nearest of these vectors, $$z_q = \mathcal{E}(z) = \arg\min_{e_i \in D} \| z - e_i \|_2^2$$. The training loss will be:
+
+$$\mathcal{L}(E,D,\mathcal{E}) = \|x - \hat{x}\|_1 + \|\text{sg}(z) - z_q\|_2^2 + \|\text{sg}(z_q) - z\|_2^2 + \mathcal{L}_{perceptual}(x, \hat{x})$$
+
+where $$\hat{x} = D(\mathcal{E}(E(x)))$$ is the reconstructed input, and $$\text{sg}(\cdot)$$ is the stop gradient operator. We have four loss terms that enforce different things:
+
+- The first term is the **reconstruction loss**. It encourages the autoencoder to output an image similar to the input.
+- The next two terms form the **commitment loss**. These terms are included to ensure that the dictionary is actually learned. It was difficult for me to understand the motivation behind the commitment loss, but the explanation given by Claude was helpful:  
+
+  *"Imagine you're playing a game where you need to stand close to one of several fixed points on the ground (these are like your codebook vectors). But instead of moving yourself to the nearest point, you could technically just walk further and further away from all of them. There's no rule saying you can't do that - but it defeats the purpose of the game!*
+
+  *This is essentially what could happen with the encoder. Without the commitment loss, the encoder parameters might update in a way that keeps pushing its outputs further from the codebook vectors, rather than learning to produce outputs that are close to them. This would undermine the whole point of vector quantization, which is to learn a discrete representation."*
+
+- Finally, the last is a **perceptual loss**, included to encourage the autoencoder to generate images that are perceptually similar to the input images. In the original IRIS repo, they use the LPIPS loss. 
+
+For the implementation, I will mostly borrow it from the [commaVQ](https://github.com/commaai/commavq/tree/master) repo as it is clear and simple. I will also look at the original IRIS repo for details about the hyperparameters, loss terms, etc. 
+
+```python
+import torchvision.transforms as T
+
+transform_ = T.Compose([
+  T.ToTensor(),
+  T.Resize((64, 64)),
+])
+
+# `observation` is a (210, 160, 3) RGB image
+# x has shape (batch_size, c, h, w) = (1, 3, 64, 64)
+x = transform_(observation).unsqueeze(0)
+config = CompressorConfig()
+encoder = Encoder(config)
+z, z_q, indices = encoder(x)
+
+print(f"{x.shape=}, {z.shape=}, {z_q.shape=}, {indices.shape=}")
+> x.shape=[1, 3, 64, 64], z.shape=[1, 16, 512], z_q.shape=[1, 16, 512], indices.shape=[1, 16]
+decoder = Decoder(config)
+x_hat = decoder(indices)
+print(f"{x_hat.shape=}")
+> x_hat.shape = [1, 3, 64, 64]
+```
+
+The snippet above shows how the input is transformed by the different components of the VQ-VAE. We initially have an observation of the environment, represented by an array of ints in the range `[0, 255]` of shape `(210, 160, 3)`. It is first transformed into a torch tensor of floats between `[0, 1]` and shape `[1, 3, 64, 64]`, where the first dimension is just a "dummy" batch dimension. The encoder then outputs three variables.
+
+The first one, `z`, is the raw output of the encoder, and has shape `(b, hz*wz, z_channels)`, where `z_channels=512` is the token embedding dimension drawn from Table 2 of the IRIS paper,  and `hz`/`wz` are the downsampled spatial dimensions (`hz = h // 16`). In other words, our observation, instead of being represented by an RBG array, is instead represented by **16 vectors of size 512.**
+
+However, these vectors are still continuous. But we want to use GPT, a transformer architecture, that actually works with discrete tokens! This is why we use VQ-VAE: `z_q` is the result of taking the vectors from the dictionary that are closest to the ones in `z`, and `indices` contains the actual indices of each token. Put differently, we now have a fixed dictionary represented by a matrix `emb` of shape `(dictionary_size, z_channels)`. For example if `indices=3`, then `z_q = emb[3]`. 
+
+Finally, the decoder takes the indices that represent the initial image and outputs a reconstruction of it.
+
+Cool, now that we have gained a little bit of intuition about how the VQ-VAE works, it is time to get to work and train it. The idea here is to gather a lot of frames from Pong and train the VQ-VAE to reconstruct them. It should act as a sanity check to ensure that we have properly implemented it before jumping into the next step, which is to implement the GPT architecture that will be actually used to model the game dynamics.
+
+
+
+### === UNDER CONSTRUCTION ===
 
 ### References
 

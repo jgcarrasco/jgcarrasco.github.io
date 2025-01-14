@@ -23,11 +23,11 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/publications/";
           },
-        },{id: "post-simulating-games-with-neural-networks",
+        },{id: "post-building-an-ai-generated-pong",
       
-        title: "Simulating games with neural networks",
+        title: "Building an AI-generated Pong",
       
-      description: "Replacing game logic by a neural network",
+      description: "Building an extremely slow and inefficient Pong with neural networks. What could go wrong?",
       section: "Posts",
       handler: () => {
         

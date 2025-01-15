@@ -92,13 +92,12 @@ for frame in frames:
 out.release()
 ```
 
-The snippet above creates a Pong environment with `gym.make` and starts it with `env.reset()`. This function returns `observation`, which is a `(210x160, 3)` RGB array of the screen, and `info` about the environment. Then, for 1000 steps, it randomly selects an action and executes it inside of the game, obtaining the next `observation` of the environment, as well as the `reward` for taking the action, whether the agent reaches terminal state (`done`), and whether the execution has reached its limit (`truncated`).
+The snippet above creates a Pong environment with `gym.make` and starts it with `env.reset()`. This function returns `observation`, which is a `(210x160, 3)` RGB array of the screen, and `info` about the environment. Then, for 1000 steps, it randomly selects an action and executes it inside of the game, obtaining the next `observation` of the environment, as well as the `reward` for taking the action, whether the agent reaches terminal state (`done`), and whether the execution has reached its limit (`truncated`). The last part of the snippet is just used to save a video of the simulation. 
 
-The last part of the snippet is just used to save a video of the simulation:
+{% include video.liquid path="assets/video/parallel_pong.mp4" class="img-fluid rounded z-depth-1" controls=true autoplay=true loop=true %}
+12 games played by our random agent. It is recommended to watch it on fullscreen. 
 
-{% include video.liquid path="assets/video/pong.mp4" class="img-fluid rounded z-depth-1" controls=false autoplay=true loop=true %} 
-
-As you can see, our random strategy leaves a lot to be desired: it only returns the ball twice in 1000 steps, and ends up with a score of zero! This implies that the data collected from this random agent will leave out a lot of the game logic (e.g. the dynamics of the ball, the green score counter) that the world model will not be able to, well, model. 
+As you can see, our random strategy leaves a lot to be desired: looking at the 12 episodes shown above, you can see that it struggles to bounce the ball back (altought it surprises me that it is able to score two points in some episodes lol). This implies that the data collected from this random agent will leave out a lot of the game logic (e.g. the dynamics of the ball, the green score counter) that the world model will not be able to, well, model. 
 
 In other words, we should expect that a world model trained from the random agent experience will properly model the movement of our player, and maybe the first collision of the ball, but the other mechanics will be undefined as it hasn't seen any data about them. 
 
@@ -162,7 +161,7 @@ print(f"{x_hat.shape=}")
 
 The snippet above shows how the input is transformed by the different components of the VQ-VAE. We initially have an observation of the environment, represented by an array of ints in the range `[0, 255]` of shape `(210, 160, 3)`. It is first transformed into a torch tensor of floats between `[0, 1]` and shape `[1, 3, 64, 64]`, where the first dimension is just a "dummy" batch dimension. The encoder then outputs three variables.
 
-The first one, `z`, is the raw output of the encoder, and has shape `(b, hz*wz, z_channels)`, where `z_channels=512` is the token embedding dimension drawn from Table 2 of the IRIS paper,  and `hz`/`wz` are the downsampled spatial dimensions (`hz = h // 16`). In other words, our observation, instead of being represented by an RBG array, is instead represented by **16 vectors of size 512.**
+The first one, `z`, is the raw output of the encoder, and has shape `(b, hz*wz, z_channels)`, where `z_channels=512` is the token embedding dimension drawn from Table 2 of the IRIS paper,  and `hz`/`wz` are the downsampled spatial dimensions (`hz = h // 16`). In other words, our observation, instead of being represented by an RGB array, is instead represented by **16 vectors of size 512.**
 
 However, these vectors are still continuous. But we want to use GPT, a transformer architecture, that actually works with discrete tokens! This is why we use VQ-VAE: `z_q` is the result of taking the vectors from the dictionary that are closest to the ones in `z`, and `indices` contains the actual indices of each token. Put differently, we now have a fixed dictionary represented by a matrix `emb` of shape `(dictionary_size, z_channels)`. For example if `indices=3`, then `z_q = emb[3]`. 
 
@@ -170,7 +169,27 @@ Finally, the decoder takes the indices that represent the initial image and outp
 
 Cool, now that we have gained a little bit of intuition about how the VQ-VAE works, it is time to get to work and train it. The idea here is to gather a lot of frames from Pong and train the VQ-VAE to reconstruct them. It should act as a sanity check to ensure that we have properly implemented it before jumping into the next step, which is to implement the GPT architecture that will be actually used to model the game dynamics.
 
+---
+**Lesson learned:** First, I tried training the autoencoder with just the reconstruction and commitment loss (i.e. no perceptual loss). I found that the autoencoder was able to reconstruct the "background of the game" but struggled to reconstruct small but essential details such as the paddles, the ball and the score counters. It turns out that this is the main motivation behind including a **perceptual loss**: while the reconstruction loss compares at pixel level, we also need to focus in a way that aligns more closely with human perception. In other words, the autoencoder is able to reconstruct most of the pixels, resulting in a small reconstruction loss, but in reality it misses the most important parts of the game! That's why we need to include something like a perceptual loss.  
 
+**Lesson learned 2:** I was getting the same (bad) reconstruction for every image. This was caused by how I was handling the vector quantization, i.e., the jump from `z` to `z_q`. Initially, what I did was to direclty feed `z_q` to the decoder. However, this breaks the computation graph, completely ignoring the encoder during training. What the authors of IRIS do, is simply the following:
+
+```python
+decoder_input = z + (z_q - z).detach() 
+```
+
+Which, expressed in words could be translated as: *take the quantized vector in the forward pass, but keep the original gradient during the backward pass*.
+
+---
+
+The video below shows 10 random frames in the top row and their corresponding reconstructions over the course of training. You can actually see how the autoencoder learns how to reconstruct different aspects of the image in increasing difficulty: first the brown background and white horizontal bars, then the paddles, then the ball and the counter.  
+
+
+{% include video.liquid path="assets/video/learning_vae.mp4" class="img-fluid rounded z-depth-1" controls=true autoplay=false loop=false %}
+
+#### 3. Implement GPT
+
+Cool! We now have an encoder to a frame of the game into a 16 token representation, as well as a decoder to build images from these tokens representations. This means that we can now 
 
 ### === UNDER CONSTRUCTION ===
 

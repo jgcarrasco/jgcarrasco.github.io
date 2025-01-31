@@ -59,6 +59,7 @@ Instead of having to figure out everything before coding, let's get our hands di
 4. Gather random experience and train the world model
 5. Visualize world model
 6. Interact with world model
+7. Come up with a better policy?
 
 #### 1. Setting up Pong
 
@@ -189,7 +190,61 @@ The video below shows 10 random frames in the top row and their corresponding re
 
 #### 3. Implement GPT
 
-Cool! We now have an encoder to a frame of the game into a 16 token representation, as well as a decoder to build images from these tokens representations. This means that we can now 
+Cool! We now have an encoder that transforms a frame of the game into a 16 token representation, as well as a decoder that builds images from these tokens representations. This means that we can now use GPT to model the actual dynamics. In other words, our "AI engine" is going to work on a token space, whereas the user will see the images converted from these token space by the decoder.
+
+To recap, an actual game can be modeled as a sequence of the initial frame, the action performed by the user/agent, then the next frame, etc:
+
+$$(x_0, a_0, x_1, a_1, ..., x_t, a_t)$$
+
+Now we would like to train a neural network to autorregresively generate frames conditioned on the actions:
+1. The game starts $$(x_0)$$.
+2. The user performs an action $$a_0$$.
+3. The neural network predicts the next frame $$x_1 = G(x_0, a_0)$$.
+4. The user performs another action $$a_1$$.
+5. The neural network predicts the next frame $$x_2 = G(x_0, a_0, x_1, a_1)$$
+6. Repeat.
+
+For this, we are going to use a Transformer-based architecture, specifically a GPT model. Yes, this is essentially has the same structure than the actual models used on ChatGPT, but way smaller and trained with way less data. But before starting to implement GPT, you might be wondering: why do we need the autoencoder? Can't we just train GPT on plain images?
+
+Technically, you could. A frame is represented by a `(64, 64, 3)` array of integers between `[0, 255]`, so you could represent an image by a sequence of `64*64*3 = 12288` tokens, i.e. the sequence would be something like $$(x_0^1, x_0^2,..., x_0^{12288}, a_0, ...)$$. 
+
+The thing is that the cost of the attention operation (which is the backbone and the main mechanism behind the success of Transformer models) **grows quadratically with the sequence length**. As a comparison, people are currently running models with ~8k tokens of context length. Also, this representation is really inefficient as images are extremely redundant: instead of representing all the pixels of the background, we could say that the background is brown. With the autoencoder, we have proved that all the relevant information of the frame can be encoded into 16 tokens, which is a way more reasonable number. 
+
+Now, let's get to work. First of all, we're going to focus on what will be the input to the Transformer. Below we can see a dummy example of the input data representing 20 frames of the game: 
+
+```python
+import einops
+from vqvae import Encoder
+
+encoder = Encoder()
+
+batch_size = 4
+indices = []
+for _ in range(20):
+  img = torch.rand(batch_size, 3, 64, 64)
+  _, _, frame = encoder(img) # (batch_size, 16)
+  action = torch.randint(0, 3, (batch_size, 1))
+  action += 512 # offset the action indices so that they don't overlap with the frame tokens
+  indices.append(torch.cat([frame, action], dim=1))
+indices = torch.stack(indices, dim=1) # (batch_size, 20, 17)
+indices = einops.rearrange(indices, "b l k -> b (l k)") # (batch_size, 20*17)
+embedding = nn.Embedding(num_embeddings=512+3, embedding_dim=256)
+x = embedding(indices)
+transformer = Transformer(TransformerConfig())
+y = transformer(x)
+print(f"{indices.shape=} {x.shape=}, {y.shape=}")
+> indices.shape=[4, 340], x.shape=[4, 340, 256], y.shape=[4, 340, 256]
+```
+
+Let's get through the example step by step. First, we generate a dummy batch of images which would represent a frame of the game. Then, we pass them through the encoder to obtain the indices of the vector that encode such frames. Then, we take a random action and offset its value by 512 (this will become clearer later). This leads us with a tensor of shape `(batch_size, 20, 17)`. Then, we flatten it to obtain a sequence of tokens representing `frame0+action0+frame1...`. 
+
+Finally, this will be the input to the Transformer. The reason why we have previously added an offset to the action tokens is so that they don't get confused by frame tokens when embedding. Put it another way: if we see a 0 in the sequence, is it the 0th vector of the tokens representing an image, or is it the 0th action? To avoid this confusion, we add the length of the vocabulary of the decoder to the index of each action.
+
+And that's it! The actual model will also have positional embeddings and a final projection layer to obtain the logits of the tokens from the vocabulary. But the most important thing to note is that this model will take sequences of `(batch_size, 20*17)` and will output a tensor of shape `(batch_size, 20*17, 512+3)` representing the logits of the next token prediction. The model will be simply trained to predict the next token via cross entropy loss, and will be trained jointly with the VQ-VAE.
+
+Once that the GPT model has been implemented, our goal is to properly train both the VQ-VAE and GPT. Then, we will save the trained models and check whether it has learned a world model or not.
+
+#### Visualize the World Model
 
 ### === UNDER CONSTRUCTION ===
 

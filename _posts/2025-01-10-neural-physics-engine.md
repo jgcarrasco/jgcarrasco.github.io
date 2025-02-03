@@ -56,10 +56,9 @@ Instead of having to figure out everything before coding, let's get our hands di
 1. Setup Pong
 2. Implement VQ-VAE
 3. Implement GPT
-4. Gather random experience and train the world model
-5. Visualize world model
-6. Interact with world model
-7. Come up with a better policy?
+4. Train the world model on gathered eperience and visualize it.
+5. Interact with world model
+6. Come up with a better policy?
 
 #### 1. Setting up Pong
 
@@ -244,7 +243,13 @@ And that's it! The actual model will also have positional embeddings and a final
 
 Once that the GPT model has been implemented, our goal is to properly train both the VQ-VAE and GPT. Then, we will save the trained models and check whether it has learned a world model or not.
 
-#### Visualize the World Model
+{% include figure.liquid loading="eager" path="assets/img/losses_pong.png" class="img-fluid rounded z-depth-1" %} Losses of GPT and VQ-VAE during training.
+
+After ~7h of training, it looks like we could train for a little bit longer but I'm going to begin with the visualization aspect in order to check what it has learned, and whether it already works as a game engine or not. Also, the GPT loss curve does some weird thing where it initially drops by quite a lot, then increases abruptly, and then it steadily goes down. My guess is that, as we're jointly training both the VAE and GPT, initially the VAE may incorrectly model the images with a small number of vectors, which can then be easily modeled by GPT, hence the lower loss. Then, as the VAE learns to encode the images with a more diverse set of vectors, it becomes harder for GPT to model the sequence. 
+
+#### 4. Visualize the World Model
+
+
 
 ### === UNDER CONSTRUCTION ===
 

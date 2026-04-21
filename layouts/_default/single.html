@@ -1,0 +1,20 @@
+{{ define "main" }}
+  <article class="post">
+    <header class="post-header">
+      {{ if eq .Section "blog" }}
+        <p class="eyebrow"><a href="{{ "/blog/" | relURL }}">Writings</a></p>
+      {{ end }}
+      <h1>{{ .Title }}</h1>
+      {{ if eq .Section "blog" }}
+        <p class="post-meta">
+          <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+          {{ with .ReadingTime }} · {{ . }} min read{{ end }}
+        </p>
+      {{ end }}
+      {{ with .Description }}<p class="post-description">{{ . }}</p>{{ end }}
+    </header>
+    <div class="post-content">
+      {{ .Content }}
+    </div>
+  </article>
+{{ end }}

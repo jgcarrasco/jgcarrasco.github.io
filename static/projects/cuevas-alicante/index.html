@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuevas de Alicante - Visor</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        h1 {
+            color: #2c5282;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .subtitle a {
+            color: #3182ce;
+        }
+        .view-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .view-btn {
+            padding: 10px 20px;
+            border: 2px solid #2c5282;
+            background: white;
+            color: #2c5282;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .view-btn:hover {
+            background: #ebf4ff;
+        }
+        .view-btn.active {
+            background: #2c5282;
+            color: white;
+        }
+        .controls {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .control-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+        }
+        input[type="text"], select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        input[type="text"] {
+            width: 250px;
+        }
+        select {
+            min-width: 150px;
+        }
+        .stats {
+            background: #edf2f7;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #4a5568;
+        }
+        #map {
+            height: 600px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: block;
+        }
+        #map.hidden {
+            display: none;
+        }
+        #tableView {
+            display: none;
+        }
+        #tableView.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        th {
+            background: #2c5282;
+            color: white;
+            padding: 12px 10px;
+            text-align: left;
+            font-size: 13px;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+        th:hover {
+            background: #2b6cb0;
+        }
+        th.sorted-asc::after {
+            content: ' ▲';
+        }
+        th.sorted-desc::after {
+            content: ' ▼';
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+        tr:hover {
+            background: #f7fafc;
+        }
+        .cave-name {
+            font-weight: 500;
+            color: #2c5282;
+        }
+        .pdf-link {
+            display: inline-block;
+            background: #48bb78;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        .pdf-link:hover {
+            background: #38a169;
+        }
+        .pdf-unavailable {
+            color: #a0aec0;
+            font-size: 12px;
+            font-style: italic;
+        }
+        .type-badge {
+            display: inline-block;
+            background: #e2e8f0;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .type-S { background: #fed7d7; color: #c53030; }
+        .type-C { background: #c6f6d5; color: #276749; }
+        .type-A { background: #feebc8; color: #c05621; }
+        .type-B { background: #bee3f8; color: #2b6cb0; }
+        .type-SC, .type-CS { background: #e9d8fd; color: #6b46c1; }
+        .number {
+            text-align: right;
+            font-family: monospace;
+        }
+        .empty {
+            color: #a0aec0;
+        }
+        .leaflet-popup-content {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .popup-title {
+            font-weight: 600;
+            color: #2c5282;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .popup-info {
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        .popup-info strong {
+            color: #555;
+        }
+        .popup-pdf {
+            margin-top: 10px;
+        }
+        .legend {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            font-size: 12px;
+            line-height: 1.8;
+        }
+        .legend-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        /* Modal styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: white;
+            border-radius: 12px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .modal-header {
+            background: #2c5282;
+            color: white;
+            padding: 20px;
+            border-radius: 12px 12px 0 0;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        .modal-header h2 {
+            margin: 0 0 5px 0;
+            font-size: 1.4em;
+        }
+        .modal-header .modal-subtitle {
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            opacity: 0.8;
+        }
+        .modal-close:hover {
+            opacity: 1;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .detail-item {
+            background: #f7fafc;
+            padding: 10px 12px;
+            border-radius: 6px;
+        }
+        .detail-item label {
+            display: block;
+            font-size: 11px;
+            color: #718096;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        .detail-item span {
+            font-size: 14px;
+            color: #2d3748;
+        }
+        .detail-btn {
+            display: inline-block;
+            background: #4299e1;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12px;
+            cursor: pointer;
+            border: none;
+        }
+        .detail-btn:hover {
+            background: #3182ce;
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            h1 {
+                font-size: 1.4em;
+            }
+            .subtitle {
+                font-size: 0.85em;
+            }
+            .view-toggle {
+                width: 100%;
+            }
+            .view-btn {
+                flex: 1;
+                padding: 12px 10px;
+            }
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 10px;
+                gap: 10px;
+            }
+            .control-group {
+                width: 100%;
+            }
+            input[type="text"], select {
+                width: 100%;
+                padding: 12px;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+            .stats {
+                text-align: center;
+            }
+            #map {
+                height: calc(100vh - 280px);
+                min-height: 300px;
+                border-radius: 6px;
+            }
+            /* Table wrapper for horizontal scroll */
+            #tableView {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            table {
+                font-size: 11px;
+                min-width: 700px;
+            }
+            th, td {
+                padding: 8px 4px;
+                white-space: nowrap;
+            }
+            .cave-name {
+                max-width: 120px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .pdf-link, .detail-btn {
+                padding: 6px 8px;
+                font-size: 11px;
+            }
+            /* Modal mobile */
+            .modal-overlay {
+                padding: 10px;
+            }
+            .modal {
+                max-height: 95vh;
+                border-radius: 8px;
+            }
+            .modal-header {
+                padding: 15px;
+                border-radius: 8px 8px 0 0;
+            }
+            .modal-header h2 {
+                font-size: 1.1em;
+                padding-right: 30px;
+            }
+            .modal-close {
+                top: 10px;
+                right: 10px;
+                font-size: 28px;
+                padding: 5px;
+            }
+            .modal-body {
+                padding: 15px;
+            }
+            .detail-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .detail-item {
+                padding: 8px;
+            }
+            .detail-item label {
+                font-size: 10px;
+            }
+            .detail-item span {
+                font-size: 13px;
+            }
+            .legend {
+                font-size: 10px;
+                padding: 6px 8px;
+            }
+        }
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.2em;
+            }
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            #map {
+                height: calc(100vh - 260px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Cuevas de la Provincia de Alicante</h1>
+    <p class="subtitle">Datos extraidos del <a href="https://cuevasalicante.espeleocv.org.es/provalic.htm" target="_blank">Catalogo de Cavidades de la Provincia de Alicante</a> (Federacion de Espeleologia de la Comunidad Valenciana)</p>
+
+    <div class="view-toggle">
+        <button class="view-btn" id="btnTable">Tabla</button>
+        <button class="view-btn active" id="btnMap">Mapa</button>
+    </div>
+
+    <div class="controls">
+        <div class="control-group">
+            <label>Buscar</label>
+            <input type="text" id="search" placeholder="Nombre, municipio...">
+        </div>
+        <div class="control-group">
+            <label>Tipo</label>
+            <select id="typeFilter">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>Municipio</label>
+            <select id="municipalityFilter">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        <div class="stats" id="stats">
+            Cargando...
+        </div>
+    </div>
+
+    <div id="map"></div>
+
+    <div id="tableView">
+        <table id="cavesTable">
+            <thead>
+                <tr>
+                    <th data-col="id" data-type="number">ID</th>
+                    <th data-col="name" data-type="string">Nombre</th>
+                    <th data-col="municipality" data-type="string">Municipio</th>
+                    <th data-col="type" data-type="string">Tipo</th>
+                    <th data-col="depth" data-type="number">Prof. (m)</th>
+                    <th data-col="length" data-type="number">Long. (m)</th>
+                    <th data-col="altitude" data-type="number">Alt. (m)</th>
+                    <th>PDF</th>
+                </tr>
+            </thead>
+            <tbody id="cavesBody">
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Detail Modal -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+                <h2 id="modalTitle">Nombre de la Cueva</h2>
+                <div class="modal-subtitle" id="modalSubtitle"></div>
+            </div>
+            <div class="modal-body" id="modalBody">
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Cave type descriptions and colors
+        const typeDescriptions = {
+            'S': 'Sima (pozo vertical)',
+            'C': 'Cueva',
+            'A': 'Abrigo',
+            'B': 'Barranc',
+            'SC': 'Sima-Cueva',
+            'CS': 'Cueva-Sima',
+            'CA': 'Cueva-Abrigo',
+            'CKTE': 'Complejo Karstico',
+            'Bu': 'Buracas',
+            'Su': 'Sumidero',
+            'Mi': 'Mina'
+        };
+
+        const typeColors = {
+            'S': '#c53030',
+            'C': '#276749',
+            'A': '#c05621',
+            'B': '#2b6cb0',
+            'SC': '#6b46c1',
+            'CS': '#6b46c1',
+            'CKTE': '#d53f8c',
+            'Bu': '#718096',
+            'Su': '#00b5d8',
+            'default': '#4a5568'
+        };
+
+        // Fix inverted cave names like "Agua, Cueva del (*)" -> "Cueva del Agua"
+        function formatCaveName(name) {
+            if (!name) return '';
+
+            // Remove quality indicators: (*), (**), (***), ( ), ()
+            let cleaned = name.replace(/\s*\(\**\s*\)\s*/g, '').trim();
+
+            // Check if name has the inverted format with comma
+            const commaIndex = cleaned.indexOf(',');
+            if (commaIndex > 0) {
+                const mainName = cleaned.substring(0, commaIndex).trim();
+                const typeArticle = cleaned.substring(commaIndex + 1).trim();
+
+                // Reconstruct: "Type del Main" or "Type Main"
+                if (typeArticle) {
+                    // Handle cases like "de l'" where we need proper spacing
+                    if (typeArticle.endsWith("l'") || typeArticle.endsWith("d'")) {
+                        cleaned = typeArticle + mainName;
+                    } else {
+                        cleaned = typeArticle + ' ' + mainName;
+                    }
+                }
+            }
+
+            // Clean up multiple spaces
+            cleaned = cleaned.replace(/\s+/g, ' ').trim();
+
+            return cleaned;
+        }
+
+        let caves = [];
+        let sortCol = 'id';
+        let sortDir = 'asc';
+        let map = null;
+        let markers = [];
+        let currentView = 'map';
+
+        // UTM to Lat/Lon conversion (Zone 30N, WGS84)
+        function utmToLatLon(northing, easting, zone = 30) {
+            // Simplified UTM to Lat/Lon conversion for Zone 30/31
+            const k0 = 0.9996;
+            const a = 6378137;
+            const e = 0.081819191;
+            const e1sq = 0.006739497;
+            const falseEasting = 500000;
+            const falseNorthing = 0;
+
+            const x = easting - falseEasting;
+            const y = northing - falseNorthing;
+
+            const M = y / k0;
+            const mu = M / (a * (1 - e * e / 4 - 3 * e * e * e * e / 64));
+
+            const e1 = (1 - Math.sqrt(1 - e * e)) / (1 + Math.sqrt(1 - e * e));
+            const J1 = 3 * e1 / 2 - 27 * e1 * e1 * e1 / 32;
+            const J2 = 21 * e1 * e1 / 16 - 55 * e1 * e1 * e1 * e1 / 32;
+            const J3 = 151 * e1 * e1 * e1 / 96;
+            const J4 = 1097 * e1 * e1 * e1 * e1 / 512;
+
+            const fp = mu + J1 * Math.sin(2 * mu) + J2 * Math.sin(4 * mu) + J3 * Math.sin(6 * mu) + J4 * Math.sin(8 * mu);
+
+            const C1 = e1sq * Math.cos(fp) * Math.cos(fp);
+            const T1 = Math.tan(fp) * Math.tan(fp);
+            const R1 = a * (1 - e * e) / Math.pow(1 - e * e * Math.sin(fp) * Math.sin(fp), 1.5);
+            const N1 = a / Math.sqrt(1 - e * e * Math.sin(fp) * Math.sin(fp));
+            const D = x / (N1 * k0);
+
+            const Q1 = N1 * Math.tan(fp) / R1;
+            const Q2 = D * D / 2;
+            const Q3 = (5 + 3 * T1 + 10 * C1 - 4 * C1 * C1 - 9 * e1sq) * D * D * D * D / 24;
+            const Q4 = (61 + 90 * T1 + 298 * C1 + 45 * T1 * T1 - 3 * C1 * C1 - 252 * e1sq) * D * D * D * D * D * D / 720;
+
+            const lat = fp - Q1 * (Q2 - Q3 + Q4);
+
+            const Q5 = D;
+            const Q6 = (1 + 2 * T1 + C1) * D * D * D / 6;
+            const Q7 = (5 - 2 * C1 + 28 * T1 - 3 * C1 * C1 + 8 * e1sq + 24 * T1 * T1) * D * D * D * D * D / 120;
+
+            const lon0 = (zone - 1) * 6 - 180 + 3;
+            const lon = lon0 + (Q5 - Q6 + Q7) / Math.cos(fp) * 180 / Math.PI;
+
+            return {
+                lat: lat * 180 / Math.PI,
+                lon: lon
+            };
+        }
+
+        function parseUTMCoordinates(coordStr) {
+            if (!coordStr) return null;
+            // Parse format like "4292601N 739238E"
+            const match = coordStr.match(/(\d+)N\s*(\d+)E?/);
+            if (!match) return null;
+
+            const northing = parseInt(match[1]);
+            let easting = parseInt(match[2]);
+
+            // Validate coordinate ranges for Alicante region
+            // Northing should be around 4150000-4350000 (covers south to north of province)
+            // Easting should be around 690000-780000 (Zone 30) or 250000-350000 (Zone 31)
+            if (northing < 4150000 || northing > 4400000) return null;
+            if (easting > 800000) return null; // Clearly wrong (data entry error)
+
+            // Determine zone based on easting
+            // Zone 30: easting typically 690000-780000
+            // Zone 31: easting typically 250000-350000
+            let zone = 30;
+            if (easting < 500000) {
+                zone = 31;
+            }
+
+            const result = utmToLatLon(northing, easting, zone);
+
+            // Final bounds check for Alicante/Valencia region
+            // Lat: 37.5 to 39.5, Lon: -1.5 to 0.8
+            if (result.lat < 37.5 || result.lat > 39.5 || result.lon < -1.5 || result.lon > 0.8) {
+                return null;
+            }
+
+            return result;
+        }
+
+        // Load JSON data
+        async function loadData() {
+            try {
+                const response = await fetch('caves_detailed.json');
+                const data = await response.json();
+                parseJSON(data);
+            } catch (e) {
+                console.error('Error loading data:', e);
+                document.getElementById('stats').textContent = 'Error cargando datos';
+            }
+        }
+
+        function parseJSON(data) {
+            caves = [];
+            for (const [id, caveData] of Object.entries(data)) {
+                const cave = { ...caveData };
+                // Format inverted cave names
+                cave.name = formatCaveName(cave.name);
+                // Parse coordinates
+                const coords = parseUTMCoordinates(cave.coordinates);
+                if (coords) {
+                    cave.lat = coords.lat;
+                    cave.lon = coords.lon;
+                }
+                caves.push(cave);
+            }
+
+            populateFilters();
+            renderTable();
+            initMap();
+        }
+
+        // Modal functions
+        function openModal(caveId) {
+            const cave = caves.find(c => c.id === caveId);
+            if (!cave) return;
+
+            document.getElementById('modalTitle').textContent = cave.name;
+            document.getElementById('modalSubtitle').textContent =
+                `${cave.municipality} | Tipo: ${cave.type} ${typeDescriptions[cave.type] ? '(' + typeDescriptions[cave.type] + ')' : ''}`;
+
+            let bodyHtml = '';
+
+            // Basic info grid
+            bodyHtml += '<div class="detail-grid">';
+            if (cave.depth) bodyHtml += `<div class="detail-item"><label>Profundidad</label><span>${cave.depth} m</span></div>`;
+            if (cave.length) bodyHtml += `<div class="detail-item"><label>Longitud</label><span>${cave.length} m</span></div>`;
+            if (cave.altitude) bodyHtml += `<div class="detail-item"><label>Altitud</label><span>${cave.altitude} m</span></div>`;
+            if (cave.sector) bodyHtml += `<div class="detail-item"><label>Sector</label><span>${cave.sector}</span></div>`;
+            bodyHtml += '</div>';
+
+            // PDF link
+            if (cave.pdf_url) {
+                bodyHtml += `<div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
+                    ${cave.pdf_available !== false
+                        ? `<a href="${cave.pdf_url}" target="_blank" class="pdf-link" style="padding: 8px 16px; font-size: 14px;">Ver PDF Original</a>`
+                        : '<span class="pdf-unavailable">PDF no disponible</span>'}
+                </div>`;
+            }
+
+            document.getElementById('modalBody').innerHTML = bodyHtml;
+            document.getElementById('detailModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Close modal on escape key or clicking outside
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+        document.getElementById('detailModal').addEventListener('click', (e) => {
+            if (e.target.id === 'detailModal') closeModal();
+        });
+
+        function populateFilters() {
+            // Types
+            const types = [...new Set(caves.map(c => c.type).filter(t => t))].sort();
+            const typeSelect = document.getElementById('typeFilter');
+            types.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t;
+                opt.textContent = t + (typeDescriptions[t] ? ` - ${typeDescriptions[t]}` : '');
+                typeSelect.appendChild(opt);
+            });
+
+            // Municipalities
+            const municipalities = [...new Set(caves.map(c => c.municipality).filter(m => m))].sort();
+            const munSelect = document.getElementById('municipalityFilter');
+            municipalities.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m;
+                opt.textContent = m;
+                munSelect.appendChild(opt);
+            });
+        }
+
+        function getFilteredCaves() {
+            const search = document.getElementById('search').value.toLowerCase();
+            const typeFilter = document.getElementById('typeFilter').value;
+            const munFilter = document.getElementById('municipalityFilter').value;
+
+            return caves.filter(cave => {
+                if (search && !cave.name.toLowerCase().includes(search) &&
+                    !cave.municipality.toLowerCase().includes(search)) {
+                    return false;
+                }
+                if (typeFilter && cave.type !== typeFilter) return false;
+                if (munFilter && cave.municipality !== munFilter) return false;
+                return true;
+            });
+        }
+
+        function sortCaves(cavesToSort) {
+            return [...cavesToSort].sort((a, b) => {
+                let aVal = a[sortCol];
+                let bVal = b[sortCol];
+
+                if (['id', 'depth', 'length', 'altitude'].includes(sortCol)) {
+                    aVal = parseFloat(aVal) || 0;
+                    bVal = parseFloat(bVal) || 0;
+                } else {
+                    aVal = (aVal || '').toLowerCase();
+                    bVal = (bVal || '').toLowerCase();
+                }
+
+                if (aVal < bVal) return sortDir === 'asc' ? -1 : 1;
+                if (aVal > bVal) return sortDir === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+
+        function renderTable() {
+            const filtered = getFilteredCaves();
+            const sorted = sortCaves(filtered);
+
+            document.getElementById('stats').textContent =
+                `Mostrando ${sorted.length} de ${caves.length} cuevas`;
+
+            document.querySelectorAll('th').forEach(th => {
+                th.classList.remove('sorted-asc', 'sorted-desc');
+                if (th.dataset.col === sortCol) {
+                    th.classList.add(sortDir === 'asc' ? 'sorted-asc' : 'sorted-desc');
+                }
+            });
+
+            const tbody = document.getElementById('cavesBody');
+            tbody.innerHTML = sorted.map(cave => `
+                <tr>
+                    <td class="number">${cave.id}</td>
+                    <td class="cave-name">${escapeHtml(cave.name)}</td>
+                    <td>${escapeHtml(cave.municipality)}</td>
+                    <td><span class="type-badge type-${cave.type}">${cave.type}</span></td>
+                    <td class="number">${cave.depth ? cave.depth : '<span class="empty">-</span>'}</td>
+                    <td class="number">${cave.length ? cave.length : '<span class="empty">-</span>'}</td>
+                    <td class="number">${cave.altitude ? cave.altitude : '<span class="empty">-</span>'}</td>
+                    <td>${cave.pdf_url ? (cave.pdf_available !== false ? `<a href="${cave.pdf_url}" target="_blank" class="pdf-link">PDF</a>` : '<span class="pdf-unavailable">PDF no disponible</span>') : '-'}</td>
+                </tr>
+            `).join('');
+
+            if (map && currentView === 'map') {
+                updateMapMarkers();
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function initMap() {
+            if (map) return;
+
+            map = L.map('map').setView([38.7, -0.3], 9);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+            // Add legend
+            const legend = L.control({ position: 'bottomright' });
+            legend.onAdd = function() {
+                const div = L.DomUtil.create('div', 'legend');
+                div.innerHTML = `
+                    <div class="legend-title">Tipos de cavidad</div>
+                    <div class="legend-item"><span class="legend-color" style="background: ${typeColors['S']}"></span> S - Sima</div>
+                    <div class="legend-item"><span class="legend-color" style="background: ${typeColors['C']}"></span> C - Cueva</div>
+                    <div class="legend-item"><span class="legend-color" style="background: ${typeColors['A']}"></span> A - Abrigo</div>
+                    <div class="legend-item"><span class="legend-color" style="background: ${typeColors['B']}"></span> B - Barranc</div>
+                    <div class="legend-item"><span class="legend-color" style="background: ${typeColors['SC']}"></span> SC/CS - Mixta</div>
+                    <div class="legend-item"><span class="legend-color" style="background: ${typeColors['CKTE']}"></span> CKTE - Complejo</div>
+                `;
+                return div;
+            };
+            legend.addTo(map);
+
+            updateMapMarkers();
+        }
+
+        function updateMapMarkers() {
+            // Clear existing markers
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
+
+            const filtered = getFilteredCaves();
+            const validCaves = filtered.filter(c => c.lat && c.lon);
+
+            validCaves.forEach(cave => {
+                const color = typeColors[cave.type] || typeColors['default'];
+
+                const marker = L.circleMarker([cave.lat, cave.lon], {
+                    radius: 6,
+                    fillColor: color,
+                    color: '#fff',
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                });
+
+                const popupContent = `
+                    <div class="popup-title">${escapeHtml(cave.name)}</div>
+                    <div class="popup-info">
+                        <strong>Municipio:</strong> ${escapeHtml(cave.municipality)}<br>
+                        <strong>Tipo:</strong> ${cave.type} ${typeDescriptions[cave.type] ? '(' + typeDescriptions[cave.type] + ')' : ''}<br>
+                        ${cave.depth ? `<strong>Profundidad:</strong> ${cave.depth} m<br>` : ''}
+                        ${cave.length ? `<strong>Longitud:</strong> ${cave.length} m<br>` : ''}
+                        ${cave.altitude ? `<strong>Altitud:</strong> ${cave.altitude} m` : ''}
+                    </div>
+                    <div class="popup-pdf" style="display: flex; gap: 8px; margin-top: 10px;">
+                        <button onclick="openModal('${cave.id}')" class="detail-btn">Ver Detalles</button>
+                        ${cave.pdf_url ? (cave.pdf_available !== false ? `<a href="${cave.pdf_url}" target="_blank" class="pdf-link">PDF</a>` : '<span class="pdf-unavailable">PDF no disponible</span>') : ''}
+                    </div>
+                `;
+
+                marker.bindPopup(popupContent);
+                marker.addTo(map);
+                markers.push(marker);
+            });
+
+            // Fit bounds if we have markers
+            if (markers.length > 0) {
+                const group = L.featureGroup(markers);
+                map.fitBounds(group.getBounds().pad(0.1));
+            }
+        }
+
+        function switchView(view) {
+            currentView = view;
+            document.getElementById('btnTable').classList.toggle('active', view === 'table');
+            document.getElementById('btnMap').classList.toggle('active', view === 'map');
+            document.getElementById('tableView').classList.toggle('active', view === 'table');
+            document.getElementById('map').classList.toggle('hidden', view !== 'map');
+
+            if (view === 'map' && map) {
+                setTimeout(() => {
+                    map.invalidateSize();
+                    updateMapMarkers();
+                }, 100);
+            }
+        }
+
+        // Event listeners
+        document.getElementById('search').addEventListener('input', renderTable);
+        document.getElementById('typeFilter').addEventListener('change', renderTable);
+        document.getElementById('municipalityFilter').addEventListener('change', renderTable);
+
+        document.getElementById('btnTable').addEventListener('click', () => switchView('table'));
+        document.getElementById('btnMap').addEventListener('click', () => switchView('map'));
+
+        document.querySelectorAll('th[data-col]').forEach(th => {
+            th.addEventListener('click', () => {
+                const col = th.dataset.col;
+                if (sortCol === col) {
+                    sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+                } else {
+                    sortCol = col;
+                    sortDir = 'asc';
+                }
+                renderTable();
+            });
+        });
+
+        // Load data on page load
+        loadData();
+    </script>
+</body>
+</html>

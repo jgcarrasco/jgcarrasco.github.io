@@ -1,0 +1,42 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{{ $description := .Description | default site.Params.description }}
+<title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }} | {{ site.Title }}{{ end }}</title>
+<meta name="description" content="{{ $description }}">
+<meta name="author" content="{{ site.Params.author.name }}">
+<meta name="keywords" content="{{ site.Params.keywords }}">
+{{ with site.Params.googleSiteVerification }}
+  <meta name="google-site-verification" content="{{ . }}">
+{{ end }}
+<link rel="canonical" href="{{ .Permalink }}">
+<link rel="icon" href="{{ "favicon.ico" | relURL }}">
+<link rel="stylesheet" href="{{ "css/site.css" | relURL }}">
+{{ with .OutputFormats.Get "RSS" }}
+  <link rel="alternate" type="application/rss+xml" href="{{ .Permalink }}" title="{{ site.Title }}">
+{{ end }}
+
+<meta property="og:title" content="{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }}{{ end }}">
+<meta property="og:description" content="{{ $description }}">
+<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
+<meta property="og:url" content="{{ .Permalink }}">
+{{ with .Params.image }}
+  {{ $resource := $.Resources.GetMatch . }}
+  {{ if $resource }}
+    <meta property="og:image" content="{{ $resource.Permalink }}">
+  {{ else }}
+    <meta property="og:image" content="{{ . | absURL }}">
+  {{ end }}
+{{ end }}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }}{{ end }}">
+<meta name="twitter:description" content="{{ $description }}">
+
+{{ if and hugo.IsProduction site.Params.googleAnalytics }}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.Params.googleAnalytics }}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "{{ site.Params.googleAnalytics }}");
+  </script>
+{{ end }}

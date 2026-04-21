@@ -1,0 +1,15 @@
+{{ define "main" }}
+  <header class="page-header">
+    <h1>{{ .Title }}</h1>
+    {{ with .Description }}<p>{{ . }}</p>{{ end }}
+  </header>
+  {{ .Content }}
+
+  <section class="post-list">
+    {{ range .Pages.ByDate.Reverse }}
+      {{ partial "post-summary.html" . }}
+    {{ else }}
+      <p>No posts yet.</p>
+    {{ end }}
+  </section>
+{{ end }}

@@ -1,0 +1,71 @@
+baseURL: "https://jgcarrasco.github.io/"
+languageCode: "en"
+title: "jgcarrasco"
+enableRobotsTXT: true
+enableGitInfo: true
+
+permalinks:
+  blog: "/blog/:year/:slug/"
+
+taxonomies:
+  category: "categories"
+  tag: "tags"
+
+menus:
+  main:
+    - name: "Home"
+      pageRef: "/"
+      weight: 10
+    - name: "Writings"
+      pageRef: "/blog"
+      weight: 20
+    - name: "Projects"
+      pageRef: "/projects"
+      weight: 30
+
+params:
+  author:
+    name: "Jorge García-Carrasco"
+  description: "Writings related to deep learning, artificial intelligence, projects, and other notes."
+  keywords: "jgcarrasco, AI, deep learning, machine learning, LLMs, blog, developer"
+  profileImage: "/img/profile.jpg"
+  showPostSummaryImages: true
+  socials:
+    - name: "Google Scholar"
+      url: "https://scholar.google.com/citations?user=48GgM40AAAAJ"
+    - name: "GitHub"
+      url: "https://github.com/jgcarrasco"
+    - name: "LinkedIn"
+      url: "https://www.linkedin.com/in/jgcarrasco"
+    - name: "X"
+      url: "https://x.com/jgcarrasco42"
+    - name: "RSS"
+      url: "/index.xml"
+      external: false
+  emailParts:
+    user: "am9yZ2FyY2FyOTc="
+    host: "Z21haWw="
+    tld: "Y29t"
+  googleAnalytics: "G-EEYE24ZXT0"
+  googleSiteVerification: "6qzosU37phoX4gLZYOf8tRh1qaZU_Cbni-IET9zw2Mk"
+
+markup:
+  goldmark:
+    extensions:
+      passthrough:
+        enable: true
+        delimiters:
+          block:
+            - ["$$", "$$"]
+            - ["\\[", "\\]"]
+          inline:
+            - ["$", "$"]
+            - ["\\(", "\\)"]
+    renderer:
+      unsafe: true
+  highlight:
+    style: "github"
+    noClasses: true
+
+minify:
+  minifyOutput: true

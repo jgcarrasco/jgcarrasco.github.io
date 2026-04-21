@@ -1,0 +1,68 @@
+{{ define "main" }}
+  <section class="intro intro-with-profile">
+    <div>
+      <h1>{{ .Title }}</h1>
+      {{ .Content }}
+    </div>
+    {{ with site.Params.profileImage }}
+      <img class="profile-image" src="{{ . | relURL }}" alt="{{ site.Params.author.name }}">
+    {{ end }}
+  </section>
+
+  {{ $posts := where site.RegularPages "Section" "blog" }}
+  {{ if $posts }}
+    <section class="post-list">
+      <h2>Latest Writings</h2>
+      {{ range first 5 ($posts.ByDate.Reverse) }}
+        {{ partial "post-summary.html" . }}
+      {{ end }}
+    </section>
+  {{ end }}
+
+  <section class="selected-publications">
+    <h2>Selected Publications</h2>
+    <article class="publication">
+      <h3><a href="https://doi.org/10.1609/aaai.v39i16.33843" target="_blank" rel="noopener noreferrer">Extracting Interpretable Task-Specific Circuits from Large Language Models for Faster Inference</a></h3>
+      <p>Jorge Garcia-Carrasco, Alejandro Mate, Juan Trujillo</p>
+      <p class="publication-venue">AAAI Conference on Artificial Intelligence, 2025</p>
+    </article>
+    <article class="publication">
+      <h3><a href="https://proceedings.mlr.press/v238/garcia-carrasco24a.html" target="_blank" rel="noopener noreferrer">How does GPT-2 Predict Acronyms? Extracting and Understanding a Circuit via Mechanistic Interpretability</a></h3>
+      <p>Jorge Garcia-Carrasco, Alejandro Mate, Juan Carlos Trujillo</p>
+      <p class="publication-venue">International Conference on Artificial Intelligence and Statistics, 2024</p>
+    </article>
+    <article class="publication">
+      <h3><a href="https://www.ijcai.org/proceedings/2024/0043" target="_blank" rel="noopener noreferrer">Detecting and understanding vulnerabilities in language models via mechanistic interpretability</a></h3>
+      <p>Jorge Garcia-Carrasco, Alejandro Mate, Juan Trujillo</p>
+      <p class="publication-venue">International Joint Conference on Artificial Intelligence, 2024</p>
+    </article>
+  </section>
+
+  {{ if or site.Params.socials site.Params.emailParts }}
+    <section class="social-links">
+      <h2>Links</h2>
+      <p class="social-line">
+        {{ range site.Params.socials }}
+          <span>[<a href="{{ .url | relURL }}"{{ if ne .external false }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ .name }}</a>]</span>
+        {{ end }}
+        {{ with site.Params.emailParts }}
+          <span>[<button class="email-button" type="button" data-email-link data-user="{{ .user }}" data-host="{{ .host }}" data-tld="{{ .tld }}">Email</button>]</span>
+        {{ end }}
+      </p>
+    </section>
+
+    {{ with site.Params.emailParts }}
+      <script>
+        (() => {
+          const button = document.querySelector("[data-email-link]");
+          if (!button) return;
+
+          button.addEventListener("click", () => {
+            const email = `${atob(button.dataset.user)}@${atob(button.dataset.host)}.${atob(button.dataset.tld)}`;
+            window.location.href = `mailto:${email}`;
+          });
+        })();
+      </script>
+    {{ end }}
+  {{ end }}
+{{ end }}

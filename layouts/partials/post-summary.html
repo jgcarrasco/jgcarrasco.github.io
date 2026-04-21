@@ -1,0 +1,28 @@
+{{ $showImage := site.Params.showPostSummaryImages }}
+{{ if isset .Params "showsummaryimage" }}
+  {{ $showImage = .Params.showSummaryImage }}
+{{ end }}
+{{ $image := "" }}
+{{ with .Params.image }}
+  {{ with $.Resources.GetMatch . }}
+    {{ $image = .RelPermalink }}
+  {{ else }}
+    {{ $image = . | relURL }}
+  {{ end }}
+{{ end }}
+
+<article class="post-summary{{ if and $showImage $image }} has-image{{ end }}">
+  <div class="post-summary-body">
+    <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+    <p class="post-meta">
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+      {{ with .ReadingTime }} · {{ . }} min read{{ end }}
+    </p>
+    {{ with .Description }}<p>{{ . }}</p>{{ end }}
+  </div>
+  {{ if and $showImage $image }}
+    <a class="post-summary-image-link" href="{{ .RelPermalink }}" aria-label="{{ .Title }}">
+      <img class="post-summary-image" src="{{ $image }}" alt="">
+    </a>
+  {{ end }}
+</article>

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="{{ site.Language.LanguageCode | default "en" }}">
+  <head>
+    {{ partial "head.html" . }}
+  </head>
+  <body>
+    {{ partial "nav.html" . }}
+    <main id="main" class="site-main">
+      {{ block "main" . }}{{ end }}
+    </main>
+    <footer class="site-footer">
+      <p>&copy; {{ now.Format "2006" }} {{ site.Params.author.name }}.</p>
+    </footer>
+    {{ if .Params.math }}
+      <script>
+        window.MathJax = {
+          tex: { inlineMath: [["$", "$"], ["\\(", "\\)"]], displayMath: [["$$", "$$"], ["\\[", "\\]"]] },
+          svg: { fontCache: "global" }
+        };
+      </script>
+      <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    {{ end }}
+  </body>
+</html>

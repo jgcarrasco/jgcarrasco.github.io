@@ -1,4 +1,4 @@
 ---
 title: "Writings"
-description: "Thoughts and notes."
+description: "Thoughts and notes"
 ---

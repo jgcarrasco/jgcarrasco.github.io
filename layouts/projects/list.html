@@ -1,0 +1,22 @@
+{{ define "main" }}
+  <header class="page-header">
+    <h1>{{ .Title }}</h1>
+    {{ with .Description }}<p>{{ . }}</p>{{ end }}
+  </header>
+
+  {{ with site.Data.projects }}
+    <section class="post-list">
+      {{ range . }}
+        <article class="post-summary">
+          <div class="post-summary-body">
+            <h2><a href="{{ .url }}">{{ .title }}</a></h2>
+            {{ with .date }}
+              <p class="post-meta"><time datetime="{{ . }}">{{ dateFormat "January 2, 2006" . }}</time></p>
+            {{ end }}
+            {{ with .description }}<p>{{ . }}</p>{{ end }}
+          </div>
+        </article>
+      {{ end }}
+    </section>
+  {{ end }}
+{{ end }}

@@ -1,7 +1,7 @@
 {{ define "main" }}
   <section class="intro intro-with-profile">
-    <div>
-      <h1>{{ .Title }}</h1>
+    <h1>{{ .Title }}</h1>
+    <div class="intro-body">
       {{ .Content }}
     </div>
     {{ with site.Params.profileImage }}

@@ -6,7 +6,6 @@ on:
       - main
     paths:
       - ".github/workflows/deploy.yml"
-      - "archetypes/**"
       - "content/**"
       - "layouts/**"
       - "static/**"
@@ -16,7 +15,6 @@ on:
       - main
     paths:
       - ".github/workflows/deploy.yml"
-      - "archetypes/**"
       - "content/**"
       - "layouts/**"
       - "static/**"

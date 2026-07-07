@@ -5,16 +5,14 @@
   </header>
 
   {{ with site.Data.projects }}
-    <section class="post-list">
+    <section class="projects-list">
       {{ range . }}
-        <article class="post-summary">
-          <div class="post-summary-body">
-            <h2><a href="{{ .url }}">{{ .title }}</a></h2>
-            {{ with .date }}
-              <p class="post-meta"><time datetime="{{ . }}">{{ dateFormat "January 2, 2006" . }}</time></p>
-            {{ end }}
-            {{ with .description }}<p>{{ . }}</p>{{ end }}
-          </div>
+        <article class="project-entry">
+          <h2><a href="{{ .url }}">{{ .title }}</a></h2>
+          {{ with .date }}
+            <div class="post-meta"><time datetime="{{ . }}">{{ dateFormat "January 2, 2006" . }}</time></div>
+          {{ end }}
+          {{ with .description }}<p>{{ . }}</p>{{ end }}
         </article>
       {{ end }}
     </section>

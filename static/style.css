@@ -1,0 +1,70 @@
+/*
+ * Adaptive Terminal theme color scheme
+ * Light + Orange (default) / Dark + Orange (prefers-color-scheme: dark)
+ *
+ * Overrides the theme's :root CSS variables.
+ */
+:root {
+  --background: #faf8f5;
+  --foreground: #1c1c1c;
+  --accent: #d97706;
+  --code-border: color-mix(in srgb, var(--foreground) 15%, transparent);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1a170f;
+    --foreground: #eceae5;
+    --accent: #f59e0b;
+  }
+}
+
+/* ── Override image borders to be less heavy ── */
+
+img {
+  border-width: 4px;
+  padding: 4px;
+}
+
+/* ── Home page writing list ── */
+
+.post-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  margin: 8px 0;
+}
+
+.post-summary .post-meta {
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+/* ── Links footer on home page ── */
+
+.site-links {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.site-links .social-line {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.link-bracket {
+  color: var(--accent);
+}
+
+.link-bracket a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.link-bracket a:hover {
+  text-decoration: none;
+}

@@ -1,8 +1,11 @@
-baseURL: "https://jgcarrasco.github.io/"
+baseURL: "https://jgcarrasco.github.io"
 languageCode: "en"
 title: "jgcarrasco"
+theme: "terminal"
 enableRobotsTXT: true
 enableGitInfo: true
+
+paginate: 5
 
 permalinks:
   blog: "/blog/:year/:slug/"
@@ -11,19 +14,36 @@ taxonomies:
   category: "categories"
   tag: "tags"
 
-menus:
-  main:
-    - name: "Home"
-      pageRef: "/"
-      weight: 10
-    - name: "Writings"
-      pageRef: "/blog"
-      weight: 20
-    - name: "Projects"
-      pageRef: "/projects"
-      weight: 30
+markup:
+  goldmark:
+    extensions:
+      passthrough:
+        enable: true
+        delimiters:
+          block:
+            - ["$$", "$$"]
+            - ["\\[", "\\]"]
+          inline:
+            - ["$", "$"]
+            - ["\\(", "\\)"]
+    renderer:
+      unsafe: true
+  highlight:
+    noClasses: false
 
 params:
+  # Terminal theme
+  contentTypeName: "blog"
+  showMenuItems: 3
+  fullWidthTheme: false
+  centerTheme: true
+  autoCover: false
+  showLastUpdated: false
+  dateFormat: "2006-01-02"
+  readingTime: true
+  oneHeadingSize: false
+
+  # Custom
   author:
     name: "Jorge García-Carrasco"
   description: "Writings related to deep learning, artificial intelligence, projects, and other notes."
@@ -49,23 +69,43 @@ params:
   googleAnalytics: "G-EEYE24ZXT0"
   googleSiteVerification: "6qzosU37phoX4gLZYOf8tRh1qaZU_Cbni-IET9zw2Mk"
 
-markup:
-  goldmark:
-    extensions:
-      passthrough:
-        enable: true
-        delimiters:
-          block:
-            - ["$$", "$$"]
-            - ["\\[", "\\]"]
-          inline:
-            - ["$", "$"]
-            - ["\\(", "\\)"]
-    renderer:
-      unsafe: true
-  highlight:
-    style: "github"
-    noClasses: true
+  # Terminal theme localization
+  readMore: "Read more"
+  menuMore: "Show more"
+  newerPosts: "Newer posts"
+  olderPosts: "Older posts"
+  missingContentMessage: "Page not found..."
+  missingBackButtonLabel: "Back to home page"
+  minuteReadingTime: "min read"
+  words: "words"
+
+  logo:
+    logoText: "jgcarrasco"
+    logoHomeLink: "/"
+
+languages:
+  en:
+    languageName: "English"
+    title: "jgcarrasco"
+    params:
+      subtitle: "Writings related to deep learning, artificial intelligence, projects, and other notes."
+      owner: ""
+      keywords: "jgcarrasco, AI, deep learning, machine learning, LLMs, blog, developer"
+      copyright: ""
+    menu:
+      main:
+        - identifier: "home"
+          name: "Home"
+          url: "/"
+          weight: 10
+        - identifier: "blog"
+          name: "Writings"
+          url: "/blog"
+          weight: 20
+        - identifier: "projects"
+          name: "Projects"
+          url: "/projects"
+          weight: 30
 
 minify:
   minifyOutput: true
